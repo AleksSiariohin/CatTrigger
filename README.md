@@ -1,1 +1,2 @@
 
+The goal of the project is to automatize count of amount of food for cats shelters depending of cats breed, age and weight. The application is created using salesforce. Objects and its fields were created and customized by application needs. Formula were used for count of nutritional norm for every single cat. Trigger is responsible for summing amount of food for every shelter. For random generation shelters and its cats were created separate Apex Class.   
