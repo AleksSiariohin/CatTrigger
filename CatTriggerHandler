@@ -1,0 +1,36 @@
+public class CatTriggerHandler {
+
+	public static void afterInsert(List<Cat__c> newList) {
+		updateSheltersFieldsFood(newList);
+	}
+
+	public static void afterDelete(List<Cat__c> oldList){
+		updateSheltersFieldsFood(oldList);
+	}
+
+	public static void afterUpdate(List<Cat__c> newList){
+		updateSheltersFieldsFood(newList);
+	}
+
+	public static void updateSheltersFieldsFood(List<Cat__c> cats) {
+		Set<Id> shelterIds = new Set<Id>();
+		for (Cat__c cat : cats) {
+      shelterIds.add(cat.ShelterId__c);
+		}
+		List<Shelter__c> updateListShelter = getShelterIdToFoodConsumption(shelterIds);
+		update updateListShelter;
+	}
+  @TestVisible
+	private static List<Shelter__c> getShelterIdToFoodConsumption(Set<Id> shelterIds) {
+		List<Shelter__c> shelterOfRelatedCat = [SELECT Id, Food_consumption_per_day__c, (SELECT Id, Amount_of_food_per_day_in_grams__c FROM Cats__r) FROM Shelter__c WHERE Id IN :shelterIds];
+        for(Shelter__c sh : shelterOfRelatedCat) {
+            Decimal sumOfFood = 0;
+			List<Cat__c> cats = sh.Cats__r;
+			for(Cat__c c : cats){
+				sumOfFood = sumOfFood + c.Amount_of_food_per_day_in_grams__c;
+        	}
+			sh.Food_consumption_per_day__c = sumOfFood;
+        }
+		return shelterOfRelatedCat;
+    }
+}
