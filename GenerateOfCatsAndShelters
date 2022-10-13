@@ -1,0 +1,53 @@
+public class GenerateOfCatsAndShelters {
+    public static void generateSheltersWithCats(Integer amountOfShelters, Integer minCatsPerShelter, Integer maxCatsPerShelter) {
+    	List<Cat__c> c = generateSheltersAndCat(amountOfShelters, minCatsPerShelter, maxCatsPerShelter);
+	   	insert c;
+	}
+    
+	public static void deleteSheltersWithCats(String idToDelete) {	
+		List<Shelter__c> shelterToDelete = deleteSheltersAndCatByIdShelters(idToDelete);
+   		delete shelterToDelete;
+	} 
+
+	public static List<Cat__c> generateSheltersAndCat(Integer amountOfShelters, Integer minCatsPerShelter, Integer maxCatsPerShelter) {
+    List<Breed__c> breeds = [SELECT Id FROM Breed__c];
+    Double randomNumber = Math.random();
+    Integer listLength = breeds.size();
+    Integer randomIndex = (randomNumber *(listLength-1)).intValue();
+    List<Shelter__c> shelters = new List<Shelter__c>();        
+    for(Integer i = 0; i < amountOfShelters; i++){       
+      shelters.add(new Shelter__c(Name = 'New Shelter ' + i));
+    }
+    insert shelters; 
+
+    List<Id> sheltersIds = new List<Id>(new Map<Id, Shelter__c>(shelters).keySet());
+		List<Shelter__c> newShelters = [SELECT Id FROM Shelter__c WHERE Id IN :sheltersIds];
+    List<Cat__c> cats = new List<Cat__c>();
+    for (Shelter__c s : newShelters) {
+      Integer RandomInteger = Math.round((Math.random() * (maxCatsPerShelter - minCatsPerShelter)) + minCatsPerShelter);
+			for (Integer j = 0; j < RandomInteger; j++) {
+        cats.add(new Cat__c(Name = 'New Cat ' + j, Breed_cat__c = breeds[randomIndex].Id, Weight__c = getRandomWeight(), Age__c = getRandomAge(), ShelterId__c = s.id));
+      }
+    }
+    return cats;    
+  }       
+
+	public static Integer getRandomAge(){
+		return Math.round((Math.random() * (20 - 0.1)) + 0.1);       
+	}
+    
+	public static Integer getRandomWeight(){
+		return Math.round((Math.random() * (20 - 0.1)) + 0.1);       
+	}
+     
+  public static List<Shelter__c> deleteSheltersAndCatByIdShelters(String idToDelete) {
+    Set<Id> shelterId = new Set<Id>();
+    shelterId.add(idToDelete);
+		List<Shelter__c> shelterToDelete = [SELECT Id, (SELECT Id FROM Cats__r) FROM Shelter__c WHERE Id IN :shelterId];
+		for (Shelter__c shelter : shelterToDelete){
+      List<Cat__c> cat = shelter.Cats__r;
+      delete cat;
+      }       
+    return shelterToDelete;
+  }
+  }
