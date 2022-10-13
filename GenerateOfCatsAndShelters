@@ -41,8 +41,7 @@ public class GenerateOfCatsAndShelters {
 		return Math.round((Math.random() * (20 - 0.1)) + 0.1);       
 	}
      
-    public static List<Shelter__c> deleteSheltersAndCatByIdShelters(List<Id> shelterId) {
-
+	public static List<Shelter__c> deleteSheltersAndCatByIdShelters(List<Id> shelterId) {
 		List<Shelter__c> shelterToDelete = [SELECT Id, (SELECT Id FROM Cats__r) FROM Shelter__c WHERE Id IN :shelterId];
 		for (Shelter__c shelter : shelterToDelete){
 			List<Cat__c> cat = shelter.Cats__r;
