@@ -1,0 +1,57 @@
+@isTest
+  public class GenerateOfCatsAndSheltersTest {
+    @isTest static void GetARandomNumberBetweenZeroAndTwenty() {
+      Integer age = GenerateOfCatsAndShelters.getRandomAge();
+      Integer weight = GenerateOfCatsAndShelters.getRandomWeight();
+      List<Integer> IntegerFromZeroToTwenty = new List<Integer> {0, 1, 2 , 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+      for(Integer i = 0; i < IntegerFromZeroToTwenty.size(); i++){
+			if(i == age){
+				System.assertEquals(IntegerFromZeroToTwenty[i], age);
+			}
+		}
+      for(Integer i = 0; i < IntegerFromZeroToTwenty.size(); i++){
+			  if(i == weight){
+			    System.assertEquals(IntegerFromZeroToTwenty[i], weight);
+			  }
+		  }
+  }
+    
+    @isTest static void whenWePassIdThenCatsAndSheltersAreDeleted() {
+      List<Shelter__c> shelters = new List<Shelter__c>();
+		  for(integer i = 0; i < 99; i++){
+			  Shelter__c newShelter = new Shelter__c();
+			  newShelter.Name='Test Shelter ' + i;
+			  shelters.add(newShelter);
+		  }
+		  insert shelters;
+      List<Id> sheltersIds = new List<Id>(new Map<Id, Shelter__c>(shelters).keySet());
+     
+      List<Breed__c> breeds = new List<Breed__c>();
+		  Breed__c breed = new Breed__c();
+		  breed.Name = 'Test';
+		  breed.Norm_of_food_per_kg_of_weight_in_grams__c = 70;
+		  breeds.add(breed);
+		  insert breeds;
+
+		  List<Cat__c> cat = new List<Cat__c>();
+		  for(integer i = 0; i < 10; i++){
+			  Cat__c newCat = new Cat__c();
+			  newCat.Name='Test Cat' + i;
+			  newCat.Age__c = 4;
+			  newCat.Weight__c = 5;
+			  newCat.Breed_cat__c = breeds[0].Id;
+			  newCat.ShelterId__c = shelters[i].Id;
+			  cat.add(newCat);
+		  }
+		  insert cat;
+
+      Test.startTest();
+      GenerateOfCatsAndShelters.deleteSheltersWithCats(sheltersIds);
+      Test.stopTest();
+        
+      List<shelter__c> sheltersAfterCatsInsert = [SELECT Id FROM shelter__c];
+      List<Cat__c> cats = [SELECT Id FROM Cat__c];
+      System.assertEquals(0, sheltersAfterCatsInsert.size());
+      System.assertEquals(0, cats.size());
+   }
+}
