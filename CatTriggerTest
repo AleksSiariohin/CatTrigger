@@ -1,0 +1,134 @@
+@isTest
+public class CatTriggerTest {
+	@isTest static void whenInsertCatsThenExpectShelterFoodConsUpdateTest() {
+		List<Shelter__c> shelters = new List<Shelter__c>();
+		for(integer i=0; i<99; i++){
+			Shelter__c newShelter = new Shelter__c();
+			newShelter.Name='Test Shelter ' + i;
+			shelters.add(newShelter);
+		}
+		insert shelters;
+
+		List<Breed__c> breeds = new List<Breed__c>();
+		Breed__c breed = new Breed__c();
+		breed.Name = 'Test';
+		breed.Norm_of_food_per_kg_of_weight_in_grams__c = 70;
+		breeds.add(breed);
+		insert breeds;
+
+		List<Cat__c> cat = new List<Cat__c>();
+		for(integer i=0; i<99; i++){
+			Cat__c newCat = new Cat__c();
+			newCat.Name='Test Cat' + i;
+			newCat.Age__c = 4;
+			newCat.Weight__c = 5;
+			newCat.Breed_cat__c = breeds[0].Id;
+			newCat.ShelterId__c = shelters[i].Id;
+			cat.add(newCat);
+		}
+
+		Test.startTest();
+		insert cat;
+		Test.stopTest();
+
+		List<shelter__c> sheltersAfterCatsInsert = [SELECT Food_consumption_per_day__c FROM shelter__c];
+		List<Cat__c> cats = [SELECT Id FROM Cat__c];
+		System.assertEquals(99, cats.size());
+		for (shelter__c shelter : sheltersAfterCatsInsert) {
+			System.assertEquals(380, shelter.Food_consumption_per_day__c);
+		}
+	}
+
+	@isTest static void whenDeleteCatsThenExpectShelterFoodConsUpdateTest() {
+		List<Shelter__c> shelters = new List<Shelter__c>();
+		for(integer i=0; i<99; i++){
+			Shelter__c newShelter = new Shelter__c();
+			newShelter.Name='Test Shelter ' + i;
+			shelters.add(newShelter);
+		}
+		insert shelters;
+		
+		List<Breed__c> breeds = new List<Breed__c>();
+		Breed__c breed = new Breed__c();
+		breed.Name = 'Test';
+		breed.Norm_of_food_per_kg_of_weight_in_grams__c = 70;
+		breeds.add(breed);
+		insert breeds;
+
+		List<Cat__c> cats = new List<Cat__c>();
+		for(integer i=0; i<99; i++){
+			Cat__c newCat = new Cat__c();
+			newCat.Name='Test Cat' + i;
+			newCat.Age__c = 4;
+			newCat.Weight__c = 5;
+			newCat.Breed_cat__c = breeds[0].Id;
+			newCat.ShelterId__c = shelters[i].Id;
+			cats.add(newCat);
+		}
+		insert cats;
+
+		Test.startTest();
+		delete cats;
+		Test.stopTest();
+
+		List<shelter__c> sheltersAfterCatsDelete = [SELECT Food_consumption_per_day__c FROM shelter__c];
+		List<Cat__c> catsAfterDelete = [SELECT Id FROM Cat__c];
+        
+		System.assertEquals(0, catsAfterDelete.size());
+		for (shelter__c shelter : sheltersAfterCatsDelete) {
+			System.assertEquals(0, shelter.Food_consumption_per_day__c);
+		}
+	}
+
+	@isTest static void whenUpdateCatsThenExpectShelterFoodConsUpdateTest() {
+        List<Shelter__c> shelters = new List<Shelter__c>();
+		Set<Id> shelterIds = new Set<Id>();
+		for(integer i=0; i<99; i++){
+			Shelter__c newShelter = new Shelter__c();
+			newShelter.Name='Test Shelter ' + i;
+			shelters.add(newShelter);
+		}
+		insert shelters;
+		
+		for (Shelter__c s : shelters) {
+			shelterIds.add(s.Id);
+		}
+
+		List<Breed__c> breeds = new List<Breed__c>();
+		Breed__c breed = new Breed__c();
+		breed.Name = 'Test';
+		breed.Norm_of_food_per_kg_of_weight_in_grams__c = 70;
+		breeds.add(breed);
+		insert breeds;
+
+		List<Cat__c> cat = new List<Cat__c>();
+		for(integer i=0; i<99; i++){
+			Cat__c newCat = new Cat__c();
+			newCat.Name='Test Cat' + i;
+			newCat.Age__c = 4;
+			newCat.Weight__c = 5;
+			newCat.Breed_cat__c = breeds[0].Id;
+			newCat.ShelterId__c = shelters[i].Id;
+			cat.add(newCat);
+		}
+		insert cat;
+
+		Test.startTest();
+		for(Cat__c c : cat){
+			c.Age__c = 8;
+            c.Weight__c = 2;
+			}
+        update cat;
+		Test.stopTest();
+        
+		List<shelter__c> sheltersAfterCatsUpdate = [SELECT Food_consumption_per_day__c FROM shelter__c WHERE Id =: shelterIds];
+		List<Cat__c> cats = [SELECT Age__c, Weight__c FROM Cat__c];
+        for(Cat__c c : cats){
+			System.assertEquals(8, c.Age__c);
+        	System.assertEquals(2, c.Weight__c);
+        }
+		for (shelter__c shelter : sheltersAfterCatsUpdate) {
+			System.assertEquals(170, shelter.Food_consumption_per_day__c);
+		}
+	}
+}
