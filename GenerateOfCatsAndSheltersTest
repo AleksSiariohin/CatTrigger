@@ -54,4 +54,24 @@
       System.assertEquals(0, sheltersAfterCatsInsert.size());
       System.assertEquals(0, cats.size());
    }
+   
+	@isTest static void whenPassParametersWeGetParentSheltersAndChildsCats() {
+        
+		List<Breed__c> breeds = new List<Breed__c>();
+		Breed__c breed = new Breed__c();
+		breed.Name = 'Test';
+		breed.Norm_of_food_per_kg_of_weight_in_grams__c = 70;
+		breeds.add(breed);
+		insert breeds;
+        
+		Test.startTest();
+		GenerateOfCatsAndShelters.generateSheltersWithCats(99, 1, 99);
+        	Test.stopTest();
+        
+        	List<shelter__c> sheltersAfterInsert = [SELECT Id FROM shelter__c];
+        	System.assertEquals(99, sheltersAfterInsert.size());
+        
+        	List<Cat__c> CatsAfterInsert = [SELECT Id FROM Cat__c];
+        	System.assertNotEquals(0, CatsAfterInsert.size());
+    	}    
 }
