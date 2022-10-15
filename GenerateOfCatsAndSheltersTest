@@ -45,15 +45,15 @@
 		  }
 		  insert cat;
 
-      Test.startTest();
-      GenerateOfCatsAndShelters.deleteSheltersWithCats(sheltersIds);
-      Test.stopTest();
+		Test.startTest();
+		GenerateOfCatsAndShelters.deleteSheltersWithCats(sheltersIds);
+		Test.stopTest();
         
-      List<shelter__c> sheltersAfterCatsInsert = [SELECT Id FROM shelter__c];
-      List<Cat__c> cats = [SELECT Id FROM Cat__c];
-      System.assertEquals(0, sheltersAfterCatsInsert.size());
-      System.assertEquals(0, cats.size());
-   }
+		List<shelter__c> sheltersAfterCatsInsert = [SELECT Id FROM shelter__c];
+      		List<Cat__c> cats = [SELECT Id FROM Cat__c];
+      		System.assertEquals(0, sheltersAfterCatsInsert.size());
+      		System.assertEquals(0, cats.size());
+   	}
    
 	@isTest static void whenPassParametersWeGetParentSheltersAndChildsCats() {
         
